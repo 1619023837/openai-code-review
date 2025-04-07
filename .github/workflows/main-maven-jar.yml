@@ -27,7 +27,7 @@ jobs:
         run: mvn clean install
       # 用于将项目的依赖项复制到指定的目录。通过这个命令，你可以轻松地将项目所需的所有依赖 JAR 文件收集起来，方便后续的部署、打包或其他用途。
       - name: copy openai-code-review-sdk JAR
-        run:  mvn dependency:copy -Dartifact=hao.wen.tao:openai-code-review-sdk:1.0 -DoutputDirectory=/libs
+        run:  mvn dependency:copy -Dartifact=hao.wen.tao:openai-code-review-sdk:1.0 -DoutputDirectory=libs
 
       - name: Run code Review
-        run: jar -jar./libs/openai-code-review-sdk-1.0.jar
+        run: jar -jar ./libs/openai-code-review-sdk-1.0.jar
