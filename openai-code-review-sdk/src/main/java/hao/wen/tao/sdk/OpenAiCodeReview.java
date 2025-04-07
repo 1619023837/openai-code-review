@@ -11,11 +11,11 @@ public class OpenAiCodeReview
     public static void main(String[] args)
         throws IOException
     {
-        System.out.println("你好！！11！！");
+        System.out.println("你好！！！！");
         //代码检出
 
         //拉取代码
-        ProcessBuilder processBuilder = new ProcessBuilder("git", "diff", "master", "03");
+        ProcessBuilder processBuilder = new ProcessBuilder("git", "diff", "HEAD~1", "HEAD");
         processBuilder.directory(new File("."));
 
         Process start = processBuilder.start();
