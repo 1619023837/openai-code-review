@@ -1,0 +1,33 @@
+name: Build and Run OpenAiCodeReview By Main Maven Jar
+
+on:
+  push:
+    branches:
+      - *
+  pull_request:
+    branches:
+      - *
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+      #步骤 1 拉取代码 到本地
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2 # 检出最后两个提交，以便可以比较 HEAD~1
+      #步骤 设置环境
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'  # 你可以选择其他发行版，如 'adopt' 或 'zulu'
+          java-version: '11'
+
+      - name: Build with Maven
+        run: mvn clean install
+      # 用于将项目的依赖项复制到指定的目录。通过这个命令，你可以轻松地将项目所需的所有依赖 JAR 文件收集起来，方便后续的部署、打包或其他用途。
+      - name: copy openai-code-review-sdk JAR
+        run:  mvn dependency:copy -Dartifact=hao.wen.tao:openai-code-review-sdk:1.0 -DoutputDirectory=/libs
+
+      - name: Run code Review
+        run: jar -jar./libs/openai-code-review-sdk-1.0.jar
