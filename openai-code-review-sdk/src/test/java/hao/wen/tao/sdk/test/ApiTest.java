@@ -1,9 +1,12 @@
-package hao.wen.tao.sdk;
+package hao.wen.tao.sdk.test;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.TypeReference;
+import com.alibaba.fastjson2.*;
 import hao.wen.tao.sdk.domain.ChatCompletionSyncResponse;
 import hao.wen.tao.sdk.types.utils.BearerTokenUtils;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -11,58 +14,18 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
-public class OpenAiCodeReview
+@RunWith(JUnit4.class)
+public class ApiTest
 {
-    public static void main(String[] args)
-        throws Exception
+
+    @Test
+    public void test()
+        throws IOException
     {
-        System.out.println("你好！！！！");
-        //代码检出
-
-        //拉取代码
-        ProcessBuilder processBuilder = new ProcessBuilder("git", "diff", "HEAD~1", "HEAD");
-        processBuilder.directory(new File("."));
-
-        Process start = processBuilder.start();
-        StringBuilder diffCode = new StringBuilder();
-        try ( //读取内容
-            BufferedReader bufferedReader = new BufferedReader(
-                new InputStreamReader(start.getInputStream()));)
-        {
-            String line;
-            while ((line = bufferedReader.readLine()) != null)
-            {
-                diffCode.append(line);
-            }
-            //等待退出
-            int exit = start.waitFor();
-            System.out.println("processed 退出"+exit);
-            System.out.println("评审代码" + diffCode);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        catch (InterruptedException e)
-        {
-            throw new RuntimeException(e);
-        }
-
-
-        //chatglm 代码评审
-        if (diffCode.length() > 0){
-            String log = codeReview(diffCode.toString());
-            System.out.println("code Review: " + log);
-        }
-
-    }
-
-    private static String codeReview(String diffCode)
-        throws Exception
-    {
-
         String apiSecret = "3763aa13ab2847528d6ffdc2fa6c53c7.6pb98r42BWeB5KWJ";
         String token = BearerTokenUtils.getToken(apiSecret);
         URL url = new URL("https://open.bigmodel.cn/api/paas/v4/chat/completions");
@@ -75,16 +38,21 @@ public class OpenAiCodeReview
         httpURLConnection.setDoOutput(true);
 
         //设置请求信息
+        String code = "1=1";
         String jsonInpuString =
             "{" + "\"model\": \"glm-4-flash\"," + "\"stream\": \"true\"," + "\"messages\": [{"
             + "\"role\": \"user\","
             + "\"content\": \"你是一个高级编程架构师，精通各类场景方案、架构设计和编程语言请，请您根据git diff记录，对代码做出评审。代码为: "
-            + diffCode + "\"" + "}]" + "}";
+            + code + "\"" + "}]" + "}";
         try (OutputStream outputStream = httpURLConnection.getOutputStream())
         {
             byte[] bytes = jsonInpuString.getBytes(StandardCharsets.UTF_8);
             outputStream.write(bytes);
         }
+
+        String requestMethod = httpURLConnection.getRequestMethod();
+        System.out.println(requestMethod);
+
         //获取到输出
         try (InputStream inputStream = httpURLConnection.getInputStream();
             BufferedReader inputStreamReader = new BufferedReader(
@@ -120,11 +88,10 @@ public class OpenAiCodeReview
                     });
                 return objectMap;
             }).collect(Collectors.toList());
-            return JSONObject.toJSONString(collect);
+            System.out.println(collect);
         }
         catch (IOException e)
         {
-            return null;
         }
     }
 }
