@@ -119,7 +119,7 @@ public class OpenAiCodeReview
                     {
                     });
                 return objectMap;
-            }).flatMap(x->x.getChoices().stream().map(d->d.getDelta().get(0).getContent().toString())).collect(Collectors.joining(","));
+            }).flatMap(x->x.getChoices().stream().map(d->d.getDelta().get(0).getContent().toString())).collect(Collectors.joining(""));
             return collect;
         }
         catch (IOException e)
