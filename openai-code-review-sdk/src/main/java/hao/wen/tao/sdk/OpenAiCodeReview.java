@@ -72,8 +72,8 @@ public class OpenAiCodeReview
             }else {
 
                 //执行将日志输入到日志仓库中
-                System.out.println("参数-->" +codeReview);
                 String codePath = writeLog(token, codeReview);
+                System.out.println("地址-->" +codePath);
             }
 
         }
@@ -170,10 +170,10 @@ public class OpenAiCodeReview
         }
 
         //使用git提交 fileName 文件名  dateFoldName 文件夹名
-        git.add().addFilepattern(dateFoldName +"/" + fileName).call();
+        git.add().addFilepattern(dateFoldName +"/" + fileName);
         git.commit().setMessage("添加一个新的文件");
 
-        git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, "")).call();
+        git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, ""));
 
         //写到哪里了
         return "https://github.com/1619023837/openai-code-review-log/blob/master/"+ dateFoldName +"/" + fileName;
