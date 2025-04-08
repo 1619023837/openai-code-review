@@ -26,6 +26,7 @@ public class ApiTest
     {
         int k = 1 / 0;
         System.out.println("执行结果！！"+ k);
+        System.out.println("end");
     }
 
     @Test
