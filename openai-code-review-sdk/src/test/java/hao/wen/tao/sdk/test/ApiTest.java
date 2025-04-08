@@ -25,7 +25,7 @@ public class ApiTest
     @Test
     public void test01()
     {
-        System.out.println(Integer.parseInt("abc1234"));
+        System.out.println(Integer.parseInt("abc12134"));
     }
 
     @Test
