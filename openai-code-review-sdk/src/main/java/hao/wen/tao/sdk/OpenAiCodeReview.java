@@ -79,7 +79,7 @@ public class OpenAiCodeReview
             "{" + "\"model\": \"glm-4-flash\"," + "\"stream\": \"true\"," + "\"messages\": [{"
             + "\"role\": \"user\","
             + "\"content\": \"你是一个高级编程架构师，精通各类场景方案、架构设计和编程语言请，请您根据git diff记录，对代码做出评审。代码为: "
-            + diffCode + "\"" + "}]" + "}";
+            + diffCode  + "并帮忙做出修正,按照java代码规范进行修正,代码输出\"}]" + "}";
         try (OutputStream outputStream = httpURLConnection.getOutputStream())
         {
             byte[] bytes = jsonInpuString.getBytes(StandardCharsets.UTF_8);
@@ -113,13 +113,21 @@ public class OpenAiCodeReview
                     //说明不是一个 完整的json
                 }
             }
-            String collect = list.stream().map(x -> {
+            List<ChatCompletionSyncResponse> dataList = list.stream().map(x -> {
                 ChatCompletionSyncResponse objectMap = JSONObject.parseObject(x,
                     new TypeReference<ChatCompletionSyncResponse>()
                     {
                     });
                 return objectMap;
-            }).flatMap(x->x.getChoices().stream().map(d->d.getDelta().get(0).getContent().toString())).collect(Collectors.joining(""));
+            }).collect(Collectors.toList());
+            if (dataList.size() == 0) {
+                return null;
+            }
+            String collect = dataList.stream().flatMap(x->x.getChoices().stream().filter(d->d.getDelta().get(0).getContent().length()>0 && d.getDelta().get(0).getContent()
+                                                                                                                                               .indexOf("\n")==-1).map(
+                d->d.getDelta().get(0).getContent()
+            )).collect(
+                Collectors.joining());
             return collect;
         }
         catch (IOException e)
