@@ -26,6 +26,7 @@ public class ApiTest
     public void test01()
     {
         int k = 1 / 0;
+        System.out.println(k);
     }
 
     @Test
