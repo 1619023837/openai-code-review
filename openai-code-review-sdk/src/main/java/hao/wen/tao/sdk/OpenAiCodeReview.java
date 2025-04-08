@@ -123,8 +123,7 @@ public class OpenAiCodeReview
             if (dataList.size() == 0) {
                 return null;
             }
-            String collect = dataList.stream().flatMap(x->x.getChoices().stream().filter(d->d.getDelta().get(0).getContent().length()>0 && d.getDelta().get(0).getContent()
-                                                                                                                                               .indexOf("\n")==-1).map(
+            String collect = dataList.stream().flatMap(x->x.getChoices().stream().filter(d->d.getDelta().get(0).getContent().length()>0).map(
                 d->d.getDelta().get(0).getContent()
             )).collect(
                 Collectors.joining());
