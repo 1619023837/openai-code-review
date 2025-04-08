@@ -149,7 +149,7 @@ public class OpenAiCodeReview
         //https://github.com/1619023837/openai-code-review-log.git
 
         //拉取仓库 setDirectory 文件夹
-        Git git = Git.cloneRepository().setURI("https://github.com/1619023837/openai-code-review-log").setDirectory(
+        Git git = Git.cloneRepository().setURI("https://github.com/1619023837/openai-code-review-log.git").setDirectory(
             new File("repo")).setCredentialsProvider(
             new UsernamePasswordCredentialsProvider(token, "")).call();
         //一天的 写到一个文件夹
