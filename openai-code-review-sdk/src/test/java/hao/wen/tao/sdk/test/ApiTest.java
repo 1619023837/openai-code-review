@@ -2,6 +2,7 @@ package hao.wen.tao.sdk.test;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.*;
+import hao.wen.tao.sdk.domain.ChatCompletionRequest;
 import hao.wen.tao.sdk.domain.ChatCompletionSyncResponse;
 import hao.wen.tao.sdk.types.utils.BearerTokenUtils;
 import org.junit.Test;
@@ -45,14 +46,15 @@ public class ApiTest
         httpURLConnection.setDoOutput(true);
         //设置请求信息
         String code = "int k = 1/0";
-        String jsonInpuString =
-            "{" + "\"model\": \"glm-4-flash\"," + "\"stream\": \"true\"," + "\"messages\": [{"
-            + "\"role\": \"user\","
-            + "\"content\": \"你是一个高级编程架构师，精通各类场景方案、架构设计和编程语言请，请您根据git diff记录，对代码做出评审。代码为: "
-            + code + "\"" + "}]" + "}";
+        ChatCompletionRequest chatCompletionSyncResponse = new ChatCompletionRequest();
+        chatCompletionSyncResponse.setModel("glm-4-flash");
+        chatCompletionSyncResponse.setMessages(new ArrayList<ChatCompletionRequest.Prompt>(){{
+            add(new ChatCompletionRequest.Prompt("user","你是一个高级编程架构师，精通各类场景方案、架构设计和编程语言请，请您根据git diff记录，对代码做出评审。代码为:"));
+            add(new ChatCompletionRequest.Prompt("user",code));
+        }});
         try (OutputStream outputStream = httpURLConnection.getOutputStream())
         {
-            byte[] bytes = jsonInpuString.getBytes(StandardCharsets.UTF_8);
+            byte[] bytes = JSON.toJSONString(chatCompletionSyncResponse).getBytes(StandardCharsets.UTF_8);
             outputStream.write(bytes);
         }
 
@@ -72,20 +74,7 @@ public class ApiTest
                 if (s == null && s.length() == 0) {
                     continue;
                 }
-                if (s.equals("[]")){
-                    continue;
-                }
-                int startIndex = s.indexOf("{");
-                //既不是空数据 也不是 {} json 结构的
-                if (startIndex == -1) {
-                    continue;
-                }
-                s = s.substring(s.indexOf("{"));
-                if (s.trim().endsWith("}")) {
-                    list.add(s);
-                }else {
-                    //说明不是一个 完整的json
-                }
+                list.add(s);
             }
             List<ChatCompletionSyncResponse> dataList = list.stream().map(x -> {
                 ChatCompletionSyncResponse objectMap = JSONObject.parseObject(x,
@@ -97,10 +86,8 @@ public class ApiTest
             if (dataList.size() == 0) {
                 return;
             }
-            String collect = dataList.stream().flatMap(x->x.getChoices().stream().filter(d->d.getDelta().get(0).getContent().length()>0 && d.getDelta().get(0).getContent()
-                .indexOf("\n")==-1).map(
-                d->d.getDelta().get(0).getContent()
-            )).collect(
+            String collect = dataList.stream().flatMap(
+                d -> d.getChoices().stream().map(x -> x.getMessage().getContent())).collect(
                 Collectors.joining());
             System.out.println(collect);
         }

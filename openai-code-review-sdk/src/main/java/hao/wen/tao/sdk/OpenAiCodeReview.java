@@ -1,7 +1,9 @@
 package hao.wen.tao.sdk;
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.TypeReference;
+import hao.wen.tao.sdk.domain.ChatCompletionRequest;
 import hao.wen.tao.sdk.domain.ChatCompletionSyncResponse;
 import hao.wen.tao.sdk.types.utils.BearerTokenUtils;
 
@@ -74,17 +76,15 @@ public class OpenAiCodeReview
             "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
         httpURLConnection.setDoOutput(true);
 
-        //设置请求信息
-        String jsonInpuString =
-            "{" + "\"model\": \"glm-4-flash\"," + "\"stream\": \"true\"," + "\"messages\": [{"
-            + "\"role\": \"user\","
-            + "\"content\": \"你是一个高级编程架构师，精通各类场景方案、架构设计和编程语言请，请您根据git diff记录，对代码做出评审。代码为: "
-            + diffCode + "\"" + "}]" + "}";
-
-        System.out.println("请求信息"+jsonInpuString);
+        ChatCompletionRequest chatCompletionSyncResponse = new ChatCompletionRequest();
+        chatCompletionSyncResponse.setModel("glm-4-flash");
+        chatCompletionSyncResponse.setMessages(new ArrayList<ChatCompletionRequest.Prompt>(){{
+            add(new ChatCompletionRequest.Prompt("user","你是一个高级编程架构师，精通各类场景方案、架构设计和编程语言请，请您根据git diff记录，对代码做出评审。代码为:"));
+            add(new ChatCompletionRequest.Prompt("user",diffCode));
+        }});
         try (OutputStream outputStream = httpURLConnection.getOutputStream())
         {
-            byte[] bytes = jsonInpuString.getBytes(StandardCharsets.UTF_8);
+            byte[] bytes = JSON.toJSONString(chatCompletionSyncResponse).getBytes(StandardCharsets.UTF_8);
             outputStream.write(bytes);
         }
         //获取到输出
@@ -96,24 +96,10 @@ public class OpenAiCodeReview
             List<String> list = new ArrayList();
             while ((s = inputStreamReader.readLine()) != null)
             {
-                //跳过空行
                 if (s == null && s.length() == 0) {
                     continue;
                 }
-                if (s.equals("[]")){
-                    continue;
-                }
-                int startIndex = s.indexOf("{");
-                //既不是空数据 也不是 {} json 结构的
-                if (startIndex == -1) {
-                    continue;
-                }
-                s = s.substring(s.indexOf("{"));
-                if (s.trim().endsWith("}")) {
-                    list.add(s);
-                }else {
-                    //说明不是一个 完整的json
-                }
+                list.add(s);
             }
             List<ChatCompletionSyncResponse> dataList = list.stream().map(x -> {
                 ChatCompletionSyncResponse objectMap = JSONObject.parseObject(x,
@@ -125,10 +111,10 @@ public class OpenAiCodeReview
             if (dataList.size() == 0) {
                 return null;
             }
-            String collect = dataList.stream().flatMap(x->x.getChoices().stream().filter(d->d.getDelta().get(0).getContent().length()>0).map(
-                d->d.getDelta().get(0).getContent()
-            )).collect(
+            String collect = dataList.stream().flatMap(
+                d -> d.getChoices().stream().map(x -> x.getMessage().getContent())).collect(
                 Collectors.joining());
+            System.out.println(collect);
             return collect;
         }
         catch (IOException e)

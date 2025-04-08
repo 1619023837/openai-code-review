@@ -9,24 +9,24 @@ public class ChatCompletionSyncResponse
 
 
     public static class Choice {
-        private List<Delta> delta;
+        private Message   message;
 
-        public List<Delta> getDelta() {
-            return delta;
+        public Message  getMessage () {
+            return message;
         }
 
-        public void setDelta(List<Delta> delta) {
-            this.delta = delta;
+        public void setMessage(Message message) {
+            this.message = message;
         }
 
         @Override
         public String toString()
         {
-            return "Choice{" + "delta=" + delta + '}';
+            return "Choice{" + "message=" + message + '}';
         }
     }
 
-    public static class Delta {
+    public static class Message  {
         private String role;
         private String content;
 
