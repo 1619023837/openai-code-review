@@ -79,7 +79,7 @@ public class OpenAiCodeReview
             "{" + "\"model\": \"glm-4-flash\"," + "\"stream\": \"true\"," + "\"messages\": [{"
             + "\"role\": \"user\","
             + "\"content\": \"你是一个高级编程架构师，精通各类场景方案、架构设计和编程语言请，请您根据git diff记录，对代码做出评审。代码为: "
-            + diffCode  + "并帮忙做出修正,按照java代码规范进行修正,代码输出\"}]" + "}";
+            + diffCode + "\"" + "}]" + "}";
 
         System.out.println("请求信息"+jsonInpuString);
         try (OutputStream outputStream = httpURLConnection.getOutputStream())
