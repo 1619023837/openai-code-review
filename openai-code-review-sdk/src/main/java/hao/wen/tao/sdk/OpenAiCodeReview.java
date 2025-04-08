@@ -6,13 +6,17 @@ import com.alibaba.fastjson2.TypeReference;
 import hao.wen.tao.sdk.domain.ChatCompletionRequest;
 import hao.wen.tao.sdk.domain.ChatCompletionSyncResponse;
 import hao.wen.tao.sdk.types.utils.BearerTokenUtils;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 
 
@@ -21,6 +25,14 @@ public class OpenAiCodeReview
     public static void main(String[] args)
         throws Exception
     {
+
+        //第一种 直接args 获取
+
+        //第二种
+        String token = System.getenv("GITHUB_TOKEN");
+        if (token == null || token.isEmpty()){
+            throw new RuntimeException("GITHUB_TOKEN is empty");
+        }
         System.out.println("你好！！！！");
         //代码检出
 
@@ -55,16 +67,22 @@ public class OpenAiCodeReview
 
         //chatglm 代码评审
         if (diffCode.length() > 0){
-            String log = codeReview(diffCode.toString());
-            System.out.println("code Review : " + log);
+            String codeReview = codeReview(diffCode.toString());
+            if (codeReview == null || codeReview.trim().length() <= 0)
+            {
+            }else {
+
+                //执行将日志输入到日志仓库中
+                String codePath = writeLog(token, codeReview);
+            }
+
         }
 
     }
 
-    private static String codeReview(String diffCode)
+    private static  String  codeReview(String diffCode)
         throws Exception
     {
-
         String apiSecret = "3763aa13ab2847528d6ffdc2fa6c53c7.6pb98r42BWeB5KWJ";
         String token = BearerTokenUtils.getToken(apiSecret);
         URL url = new URL("https://open.bigmodel.cn/api/paas/v4/chat/completions");
@@ -96,7 +114,8 @@ public class OpenAiCodeReview
             List<String> list = new ArrayList();
             while ((s = inputStreamReader.readLine()) != null)
             {
-                if (s == null && s.length() == 0) {
+                //trim 之后再判断长度
+                if (s == null && s.trim().length() == 0) {
                     continue;
                 }
                 list.add(s);
@@ -109,17 +128,65 @@ public class OpenAiCodeReview
                 return objectMap;
             }).collect(Collectors.toList());
             if (dataList.size() == 0) {
-                return null;
+                return  null;
             }
             String collect = dataList.stream().flatMap(
                 d -> d.getChoices().stream().map(x -> x.getMessage().getContent())).collect(
                 Collectors.joining());
-            System.out.println(collect);
+
             return collect;
         }
         catch (IOException e)
         {
-            return null;
+            e.printStackTrace();
         }
+        return null;
+    }
+
+    private static String writeLog(String token,String log)
+        throws GitAPIException
+    {
+        //https://github.com/1619023837/openai-code-review-log.git
+
+        //拉取仓库 setDirectory 文件夹
+        Git git = Git.cloneRepository().setURI("https://github.com/1619023837/openai-code-review-log").setDirectory(
+            new File("repo")).setCredentialsProvider(
+            new UsernamePasswordCredentialsProvider(token, "")).call();
+        //一天的 写到一个文件夹
+        String dateFoldName = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        File dateFolder = new File("repo/" + dateFoldName);
+        if (!dateFolder.exists()) {
+            dateFolder.mkdirs();
+        }
+        String fileName = getRandomString(12) + ".md";
+        File newFile = new File(dateFolder, fileName);
+        try(FileWriter writer = new FileWriter(newFile);)
+        {
+            writer.write(log);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        //使用git提交 fileName 文件名  dateFoldName 文件夹名
+        git.add().addFilepattern(dateFoldName +"/" + fileName).call();
+        git.commit().setMessage("添加一个新的文件");
+
+        git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, "")).call();
+
+        //写到哪里了
+        return "https://github.com/1619023837/openai-code-review-log/blob/master/"+ dateFoldName +"/" + fileName;
+    }
+
+    public static String getRandomString(int length) {
+        String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            int number = random.nextInt(str.length());
+            sb.append(str.charAt(number));
+        }
+        return sb.toString();
     }
 }
