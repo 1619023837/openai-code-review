@@ -54,7 +54,7 @@ public class OpenAiCodeReview
         //chatglm 代码评审
         if (diffCode.length() > 0){
             String log = codeReview(diffCode.toString());
-            System.out.println("code Review: " + log);
+            System.out.println("code Review : " + log);
         }
 
     }
@@ -113,14 +113,14 @@ public class OpenAiCodeReview
                     //说明不是一个 完整的json
                 }
             }
-            List<ChatCompletionSyncResponse> collect = list.stream().map(x -> {
+            String collect = list.stream().map(x -> {
                 ChatCompletionSyncResponse objectMap = JSONObject.parseObject(x,
                     new TypeReference<ChatCompletionSyncResponse>()
                     {
                     });
                 return objectMap;
-            }).collect(Collectors.toList());
-            return JSONObject.toJSONString(collect);
+            }).flatMap(x->x.getChoices().stream().map(d->d.getDelta().get(0).getContent().toString())).collect(Collectors.joining(","));
+            return collect;
         }
         catch (IOException e)
         {
