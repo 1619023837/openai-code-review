@@ -25,9 +25,7 @@ public class ApiTest
     @Test
     public void test01()
     {
-        int k = 2 / 0;
-        System.out.println("执行结果！！"+ k);
-        System.out.println(k / 2);
+        System.out.println(Integer.parseInt("abc1234"));
     }
 
     @Test
