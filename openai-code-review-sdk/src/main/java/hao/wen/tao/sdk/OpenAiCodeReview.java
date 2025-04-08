@@ -170,10 +170,10 @@ public class OpenAiCodeReview
         }
 
         //使用git提交 fileName 文件名  dateFoldName 文件夹名
-        git.add().addFilepattern(dateFoldName +"/" + fileName);
-        git.commit().setMessage("添加一个新的文件");
+        git.add().addFilepattern(dateFoldName +"/" + fileName).call();
+        git.commit().setMessage("添加一个新的文件").call();
 
-        git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, ""));
+        git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, "")).call();
 
         //写到哪里了
         return "https://github.com/1619023837/openai-code-review-log/blob/master/"+ dateFoldName +"/" + fileName;
