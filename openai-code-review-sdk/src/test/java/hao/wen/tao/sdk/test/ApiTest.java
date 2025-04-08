@@ -23,6 +23,12 @@ public class ApiTest
 {
 
     @Test
+    public void test01()
+    {
+        int k = 1 / 0;
+    }
+
+    @Test
     public void test()
         throws IOException
     {
