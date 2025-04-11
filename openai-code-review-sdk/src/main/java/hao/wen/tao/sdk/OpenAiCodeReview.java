@@ -88,7 +88,7 @@ public class OpenAiCodeReview
         String urlStr = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s";
         urlStr = String.format(urlStr, accessToken);
         Message message = new Message();
-        message.setTouser("oqu5O7KmQg_sVopXf7sNsRn4uECQ");
+        message.setTouser("oqu5O7Dmpwyq-6rlOVvTXGZGjAcM");
         message.setTemplate_id("Gu4ulHjLuEpWXFm9IB_j87l2HU8ncOoHo-w2mY4D7L8");
         message.setUrl(logUrl);
         message.put("project","big-market");
