@@ -4,7 +4,9 @@ import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.*;
 import hao.wen.tao.sdk.domain.ChatCompletionRequest;
 import hao.wen.tao.sdk.domain.ChatCompletionSyncResponse;
+import hao.wen.tao.sdk.domain.Message;
 import hao.wen.tao.sdk.types.utils.BearerTokenUtils;
+import hao.wen.tao.sdk.types.utils.WXAccessTokenUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -13,8 +15,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -93,4 +94,107 @@ public class ApiTest
         {
         }
     }
+
+    @Test
+    public void testvx()
+        throws Exception
+    {
+        //获取access_token
+        String accessToken = WXAccessTokenUtils.getAccessToken();
+        String urlStr = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s";
+        urlStr = String.format(urlStr, accessToken);
+        Message message = new Message();
+        message.setTouser("oqu5O7Dmpwyq-6rlOVvTXGZGjAcM");
+        message.setTemplate_id("Gu4ulHjLuEpWXFm9IB_j87l2HU8ncOoHo-w2mY4D7L8");
+        message.setUrl("https://github.com/1619023837/openai-code-review/actions");
+        message.put("project","big-market");
+        message.put("review","feat: 新加功能");
+        sendPostRequest(urlStr, JSON.toJSONString(message));
+    }
+
+    private static void sendPostRequest(String urlStr, String message)
+        throws IOException
+    {
+        URL url = new URL(urlStr);
+        HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setDoOutput(true);
+        try(OutputStream outputStream = connection.getOutputStream();)
+        {
+            byte[] input = message.getBytes(StandardCharsets.UTF_8);
+            outputStream.write(input, 0, input.length);
+        }
+
+        int responseCode = connection.getResponseCode();
+        System.out.println(responseCode);
+
+//        if (responseCode == HttpURLConnection.HTTP_OK){
+//            try(BufferedReader bufferedReader = new BufferedReader(
+//                new InputStreamReader(connection.getInputStream())))
+//            {
+//                String line = "";
+//                StringBuilder response = new StringBuilder();
+//                while ((line = bufferedReader.readLine()) != null)
+//                {
+//                    response.append(line);
+//                }
+//                System.out.println(response);
+//            }
+//        }
+        try (Scanner scanner = new Scanner(connection.getInputStream(), StandardCharsets.UTF_8.name())) {
+            String response = scanner.useDelimiter("\\A").next();
+            System.out.println(response);
+        }
+    }
+
+//    public static class Message{
+//        private String touser;
+//
+//        private String template_id;
+//
+//        private String url;
+//        private Map<String, Map<String, String>> data = new HashMap<>();
+//
+//        public void put(String key, String value)
+//        {
+//            data.put(key,new HashMap(){
+//                {
+//                    put("value",value);
+//                }
+//            });
+//        }
+//        public String getTouser() {
+//            return touser;
+//        }
+//
+//        public void setTouser(String touser) {
+//            this.touser = touser;
+//        }
+//
+//        public String getTemplate_id() {
+//            return template_id;
+//        }
+//
+//        public void setTemplate_id(String template_id) {
+//            this.template_id = template_id;
+//        }
+//
+//        public String getUrl() {
+//            return url;
+//        }
+//
+//        public void setUrl(String url) {
+//            this.url = url;
+//        }
+//
+//        public Map<String, Map<String, String>> getData() {
+//            return data;
+//        }
+//
+//        public void setData(Map<String, Map<String, String>> data) {
+//            this.data = data;
+//        }
+//
+//    }
 }
