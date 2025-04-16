@@ -142,21 +142,24 @@ public class GitCommand
     //让日志写数据
     public String commitAndPush(String recommend) throws Exception {
         //1、克隆仓库2、 设置 拉取url 3、 设置文件夹
+        //new File("repo"))  在github 应该是一个动态的吧  拉倒本地 则需要动态修改
+
+        File file = new File("repo");
+        System.out.println(file.getAbsolutePath());
         Git git = Git.cloneRepository().setURI(githubReviewLogUri + ".git").setDirectory(
-            new File("repo")).setCredentialsProvider(
+                file).setCredentialsProvider(
             new UsernamePasswordCredentialsProvider(githubToken, ""))
             .call();
         //创建分支
-        //文件夹
         String dateFormatName = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        //文件夹 repo/下的dateFormatName 文件夹名称
         File dirFolder = new File("repo/" + dateFormatName);
         if (!dirFolder.exists()) {
             dirFolder.mkdirs();
         }
 
         //工程名称
-        String fileName = project + "-" + branch + "-" + author + System.currentTimeMillis() + "-"
-                         + RandomStringUtils.getRandomString(4) + ".md";
+        String fileName = project + "-" + branch + "-" + "haowentao" + System.currentTimeMillis() + "-" + RandomStringUtils.getRandomString(4) + ".md";
 
         File newFile = new File(dirFolder, fileName);
         try( FileWriter fileWriter = new FileWriter(newFile);)
@@ -164,14 +167,14 @@ public class GitCommand
            fileWriter.write(recommend);
         }
 
-        //提交内容
-        git.add().addFilepattern(dirFolder +"/" + fileName).call();
+        //提交内容 addFilepattern 暂存的文件路径  文件夹/文件名
+        git.add().addFilepattern(dateFormatName +"/" + fileName).call();
         git.commit().setMessage("add code review new file" + fileName).call();
         git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(githubToken, "")).call();
 
-        logger.info("openai-code-review-log commitAndPush success{}",fileName);
+        logger.info("openai-code-review-log commitAndPush success: {}",fileName);
 
-        //不同仓库拼接方式不一样
+//        不同仓库拼接方式不一样
         return githubReviewLogUri + "/blob/master/" + dirFolder + "/" + fileName;
     }
 
