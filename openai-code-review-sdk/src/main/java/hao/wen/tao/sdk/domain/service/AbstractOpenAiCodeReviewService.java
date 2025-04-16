@@ -31,13 +31,10 @@ public abstract class AbstractOpenAiCodeReviewService implements IOpenAiCodeRevi
     {
 
         try {
-            System.out.println("开始");
             //1、拉取代码 git
             String diffCode = getDiffCode();
-            System.out.println("开始 diffCode");
             //2、ai 评审
             String recommend = codeReview(diffCode);
-            System.out.println("开始 recommend");
             //3、推送仓库
             String logUrl = recordCodeReview(recommend);
             // 4. 发送消息通知；日志地址、通知的内容
