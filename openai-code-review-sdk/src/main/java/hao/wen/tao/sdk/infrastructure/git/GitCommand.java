@@ -142,7 +142,7 @@ public class GitCommand
     //让日志写数据
     public String commitAndPush(String recommend) throws Exception {
         //1、克隆仓库2、 设置 拉取url 3、 设置文件夹
-        //new File("repo"))  在github 应该是一个动态的吧  拉倒本地 则需要动态修改
+        //new File("repo"))  new File("repo"))  必须是一个动态 这样才不会报错。
 
         File file = new File("repo");
         System.out.println(file.getAbsolutePath());
