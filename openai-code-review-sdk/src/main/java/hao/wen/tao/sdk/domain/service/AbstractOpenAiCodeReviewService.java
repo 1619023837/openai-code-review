@@ -51,7 +51,7 @@ public abstract class AbstractOpenAiCodeReviewService implements IOpenAiCodeRevi
         throws Exception;
 
     protected abstract String getDiffCode()
-        throws IOException, InterruptedException;
+        throws Exception;
 
 
     protected abstract String codeReview(String diffCode)

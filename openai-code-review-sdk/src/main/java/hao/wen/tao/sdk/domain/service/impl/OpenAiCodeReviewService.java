@@ -2,13 +2,13 @@ package hao.wen.tao.sdk.domain.service.impl;
 
 import hao.wen.tao.sdk.domain.service.AbstractOpenAiCodeReviewService;
 import hao.wen.tao.sdk.infrastructure.git.GitCommand;
+import hao.wen.tao.sdk.infrastructure.git.GitRestAPIOperation;
 import hao.wen.tao.sdk.infrastructure.openai.IOpenAI;
 import hao.wen.tao.sdk.infrastructure.openai.dto.ChatCompletionRequestDTO;
 import hao.wen.tao.sdk.infrastructure.openai.dto.ChatCompletionSyncResponseDTO;
 import hao.wen.tao.sdk.infrastructure.weixin.WeiXin;
 import hao.wen.tao.sdk.infrastructure.weixin.dto.TemplateMessageDTO;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,18 +16,21 @@ import java.util.Map;
 
 public class OpenAiCodeReviewService extends AbstractOpenAiCodeReviewService
 {
-    public OpenAiCodeReviewService(GitCommand gitCommand, IOpenAI openAI, WeiXin weiXin)
+
+    private GitRestAPIOperation gitRestAPIOperation;
+
+    public OpenAiCodeReviewService(GitRestAPIOperation gitRestAPIOperation,GitCommand gitCommand, IOpenAI openAI, WeiXin weiXin)
     {
         super(gitCommand, openAI, weiXin);
+        this.gitRestAPIOperation = gitRestAPIOperation;
     }
-
 
 
     @Override
     protected String getDiffCode()
-        throws IOException, InterruptedException
+        throws Exception
     {
-        return  gitCommand.diff();
+        return  this.gitRestAPIOperation.diff();
     }
 
     @Override
