@@ -2,6 +2,7 @@ package hao.wen.tao.sdk;
 
 import hao.wen.tao.sdk.domain.service.impl.OpenAiCodeReviewService;
 import hao.wen.tao.sdk.infrastructure.git.GitCommand;
+import hao.wen.tao.sdk.infrastructure.git.GitRestAPIOperation;
 import hao.wen.tao.sdk.infrastructure.openai.IOpenAI;
 import hao.wen.tao.sdk.infrastructure.openai.impl.ChatGLM;
 import hao.wen.tao.sdk.infrastructure.weixin.WeiXin;
@@ -69,7 +70,9 @@ public class OpenAiCodeReview
 
         //chatglm 地址  生成token地址
         IOpenAI iOpenAI = new ChatGLM(getEnv("CHATGLM_APIHOST"), getEnv("CHATGLM_APIKEYSECRET"));
-        OpenAiCodeReviewService openAiCodeReviewService = new OpenAiCodeReviewService(gitCommand, iOpenAI, weiXin);
+        GitRestAPIOperation gitRestAPIOperation = new GitRestAPIOperation(
+            getEnv("GIT_CHECK_COMMIT_URL"), getEnv("CHATGLM_APIHOST"));
+        OpenAiCodeReviewService openAiCodeReviewService = new OpenAiCodeReviewService(gitRestAPIOperation,gitCommand, iOpenAI, weiXin);
         openAiCodeReviewService.exec();
         logger.info("openai-code-review done!");
     }
