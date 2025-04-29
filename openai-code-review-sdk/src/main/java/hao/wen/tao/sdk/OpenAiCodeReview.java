@@ -81,7 +81,7 @@ public class OpenAiCodeReview
     {
         String token = System.getenv(key);
         if (token == null || token.length() == 0) {
-            throw new RuntimeException("token is null");
+            throw new RuntimeException(key + "token is null");
         }
         return token;
     }
