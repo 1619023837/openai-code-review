@@ -38,8 +38,6 @@ public class GitRestAPIOperation implements BaseGitOperation
         header.put("Accept", "application/vnd.github+json");
         header.put("Authorization", "Bearer " + token);
         header.put("X-GitHub-Api-Version", "2022-11-28");
-        logger.error("url: " + url);
-        logger.error("token: " + token);
         String execute = DefaultHttpUtil.execute(url, header);
         SingleCommitResponse singleCommitResponse = JSON.parseObject(execute,
             SingleCommitResponse.class);
