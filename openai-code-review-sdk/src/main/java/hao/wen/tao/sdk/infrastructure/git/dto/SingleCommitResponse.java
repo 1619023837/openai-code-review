@@ -12,7 +12,7 @@ public class SingleCommitResponse
 
     private Commit commit;
 
-    private CommitFile[] commitFiles;
+    private CommitFile[] files;
     @Data
     public static class Commit
     {

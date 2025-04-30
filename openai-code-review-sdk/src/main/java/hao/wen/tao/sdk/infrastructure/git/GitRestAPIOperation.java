@@ -37,12 +37,13 @@ public class GitRestAPIOperation implements BaseGitOperation
         Map<String, String> header = new HashMap();
         header.put("Accept", "application/vnd.github+json");
         header.put("Authorization", "Bearer " + token);
-        header.put("X-GitHub-Api-Version", "X-GitHub-Api-Version");
+        header.put("X-GitHub-Api-Version", "2022-11-28");
+        logger.error("url: " + url);
         String execute = DefaultHttpUtil.execute(url, header);
         SingleCommitResponse singleCommitResponse = JSON.parseObject(execute,
             SingleCommitResponse.class);
 
-        SingleCommitResponse.CommitFile[] commitFiles = singleCommitResponse.getCommitFiles();
+        SingleCommitResponse.CommitFile[] commitFiles = singleCommitResponse.getFiles();
         StringBuilder sb = new StringBuilder();
         for (SingleCommitResponse.CommitFile commitFile : commitFiles){
             sb.append("待评审文件名称: ").append(commitFile.getFilename()).append("\n");
