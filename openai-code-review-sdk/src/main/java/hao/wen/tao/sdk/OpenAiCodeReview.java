@@ -71,7 +71,7 @@ public class OpenAiCodeReview
         //chatglm 地址  生成token地址
         IOpenAI iOpenAI = new ChatGLM(getEnv("CHATGLM_APIHOST"), getEnv("CHATGLM_APIKEYSECRET"));
         GitRestAPIOperation gitRestAPIOperation = new GitRestAPIOperation(
-            getEnv("GIT_CHECK_COMMIT_URL"), getEnv("CHATGLM_APIHOST"));
+            getEnv("GIT_CHECK_COMMIT_URL"), getEnv("GITHUB_TOKEN"));
         OpenAiCodeReviewService openAiCodeReviewService = new OpenAiCodeReviewService(gitRestAPIOperation,gitCommand, iOpenAI, weiXin);
         openAiCodeReviewService.exec();
         logger.info("openai-code-review done!");
