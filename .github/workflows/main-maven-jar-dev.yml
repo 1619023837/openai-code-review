@@ -60,7 +60,7 @@ jobs:
       # 获取提交记录的  版本id
       - name: Get version id
         id: repo-version-id
-        run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=format:'%H')" >> $GITHUB_VERSION
+        run: echo "GITHUB_VERSION=$(git log -1 --pretty=format:'%H')" >> $GITHUB_ENV
 
       - name: Run Code Review
         run: java -jar ./libs/openai-code-review-sdk-1.0.jar
