@@ -36,7 +36,7 @@ public class Feishu
         BotMessageRequestDTO.BotMessageContent content = new BotMessageRequestDTO.BotMessageContent();
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("你好,你的github Action的AI 代码评审已经处理完成,请查看处理结果");
+        stringBuilder.append("你好,你的github Action的AI 代码评审已经处理完成,请查看处理结果\n");
         stringBuilder.append(redirectUrl);
         content.setText(stringBuilder.toString());
         botMessageRequestDTO.setContent(content);

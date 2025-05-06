@@ -39,7 +39,7 @@ public class GitRestAPIOperation implements BaseGitOperation
         header.put("Authorization", "Bearer " + token);
         header.put("X-GitHub-Api-Version", "2022-11-28");
         String execute = DefaultHttpUtil.execute(url, header);
-        logger.info("output{}" + execute);
+        logger.info("output" + execute);
         SingleCommitResponse singleCommitResponse = JSON.parseObject(execute,
             SingleCommitResponse.class);
 
