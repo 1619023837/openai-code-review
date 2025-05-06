@@ -59,7 +59,7 @@ jobs:
 
       # 获取提交记录的  版本id
       - name: Get version id
-        id: repo-name
+        id: repo-version-id
         run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=format:'%H')" >> $GITHUB_VERSION
 
       - name: Run Code Review
