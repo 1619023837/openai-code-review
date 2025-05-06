@@ -52,8 +52,9 @@ public class OpenAiCodeReview
         throws Exception
     {
         System.out.println("start");
+        String url = EnvUtils.getEnv("GITHUB_REVIEW_LOG_URI") + "/" + EnvUtils.getEnv("GITHUB_VERSION");
         GitCommand gitCommand = new GitCommand(
-            EnvUtils.getEnv("GITHUB_REVIEW_LOG_URI"),
+            url,
             EnvUtils.getEnv("GITHUB_TOKEN"),
             EnvUtils.getEnv("COMMIT_PROJECT"),
             EnvUtils.getEnv("COMMIT_BRANCH"),
