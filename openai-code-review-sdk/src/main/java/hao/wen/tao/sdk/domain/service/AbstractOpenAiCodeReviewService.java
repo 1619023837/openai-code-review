@@ -1,12 +1,12 @@
 package hao.wen.tao.sdk.domain.service;
 
+import hao.wen.tao.sdk.infrastructure.feishu.IMessageStrategy;
 import hao.wen.tao.sdk.infrastructure.git.GitCommand;
 import hao.wen.tao.sdk.infrastructure.openai.IOpenAI;
-import hao.wen.tao.sdk.infrastructure.weixin.WeiXin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+
 
 
 public abstract class AbstractOpenAiCodeReviewService implements IOpenAiCodeReviewService
@@ -17,13 +17,13 @@ public abstract class AbstractOpenAiCodeReviewService implements IOpenAiCodeRevi
 
     protected final GitCommand gitCommand;
     protected final IOpenAI openAI;
-    protected final WeiXin weiXin;
+    protected final IMessageStrategy iMessageStrategy;
 
-    public AbstractOpenAiCodeReviewService(GitCommand gitCommand, IOpenAI openAI, WeiXin weiXin)
+    public AbstractOpenAiCodeReviewService(GitCommand gitCommand, IOpenAI openAI, IMessageStrategy iMessageStrategy)
     {
         this.gitCommand = gitCommand;
         this.openAI = openAI;
-        this.weiXin = weiXin;
+        this.iMessageStrategy = iMessageStrategy;
     }
 
     @Override
@@ -35,7 +35,7 @@ public abstract class AbstractOpenAiCodeReviewService implements IOpenAiCodeRevi
             String diffCode = getDiffCode();
             //2、ai 评审
             String recommend = codeReview(diffCode);
-            //3、推送仓库
+            //3、推送仓库地址
             String logUrl = recordCodeReview(recommend);
             // 4. 发送消息通知；日志地址、通知的内容
             pushMessage(logUrl);

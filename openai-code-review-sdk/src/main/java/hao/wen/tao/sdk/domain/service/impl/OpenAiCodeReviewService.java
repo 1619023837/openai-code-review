@@ -1,12 +1,12 @@
 package hao.wen.tao.sdk.domain.service.impl;
 
 import hao.wen.tao.sdk.domain.service.AbstractOpenAiCodeReviewService;
+import hao.wen.tao.sdk.infrastructure.feishu.IMessageStrategy;
 import hao.wen.tao.sdk.infrastructure.git.GitCommand;
 import hao.wen.tao.sdk.infrastructure.git.GitRestAPIOperation;
 import hao.wen.tao.sdk.infrastructure.openai.IOpenAI;
 import hao.wen.tao.sdk.infrastructure.openai.dto.ChatCompletionRequestDTO;
 import hao.wen.tao.sdk.infrastructure.openai.dto.ChatCompletionSyncResponseDTO;
-import hao.wen.tao.sdk.infrastructure.weixin.WeiXin;
 import hao.wen.tao.sdk.infrastructure.weixin.dto.TemplateMessageDTO;
 
 import java.util.ArrayList;
@@ -19,9 +19,9 @@ public class OpenAiCodeReviewService extends AbstractOpenAiCodeReviewService
 
     private GitRestAPIOperation gitRestAPIOperation;
 
-    public OpenAiCodeReviewService(GitRestAPIOperation gitRestAPIOperation,GitCommand gitCommand, IOpenAI openAI, WeiXin weiXin)
+    public OpenAiCodeReviewService(GitRestAPIOperation gitRestAPIOperation,GitCommand gitCommand, IOpenAI openAI, IMessageStrategy iMessageStrategy)
     {
-        super(gitCommand, openAI, weiXin);
+        super(gitCommand, openAI, iMessageStrategy);
         this.gitRestAPIOperation = gitRestAPIOperation;
     }
 
@@ -47,6 +47,7 @@ public class OpenAiCodeReviewService extends AbstractOpenAiCodeReviewService
             private static final long serialVersionUID = -7988151926241837899L;
 
             {
+                //提示词Prompt
                 add(new ChatCompletionRequestDTO.Prompt("user", "你是一位资深编程专家，拥有深厚的编程基础和广泛的技术栈知识。你的专长在于识别代码中的低效模式、安全隐患、以及可维护性问题，并能提出针对性的优化策略。你擅长以易于理解的方式解释复杂的概念，确保即使是初学者也能跟随你的指导进行有效改进。在提供优化建议时，你注重平衡性能、可读性、安全性、逻辑错误、异常处理、边界条件，以及可维护性方面的考量，同时尊重原始代码的设计意图。\n" +
                                                                 "你总是以鼓励和建设性的方式提出反馈，致力于提升团队的整体编程水平，详尽指导编程实践，雕琢每一行代码至臻完善。用户会将仓库代码分支修改代码给你，以git diff 字符串的形式提供，你需要根据变化的代码，帮忙review本段代码。然后你review内容的返回内容必须严格遵守下面我给你的格式，包括标题内容。\n" +
                                                                 "模板中的变量内容解释：\n" +
@@ -63,7 +64,7 @@ public class OpenAiCodeReviewService extends AbstractOpenAiCodeReviewService
                                                                 "3. 不要携带变量内容解释信息。\n" +
                                                                 "4. 有清晰的标题结构\n" +
                                                                 "返回格式严格如下：\n" +
-                                                                "# 小傅哥项目： OpenAi 代码评审.\n" +
+                                                                "# 文涛： OpenAi 代码评审.\n" +
                                                                 "### \uD83D\uDE00代码评分：{变量1}\n" +
                                                                 "#### \uD83D\uDE00代码逻辑与目的：\n" +
                                                                 "{变量6}\n" +
@@ -82,7 +83,6 @@ public class OpenAiCodeReviewService extends AbstractOpenAiCodeReviewService
 
 
         ChatCompletionSyncResponseDTO completions = openAI.complateion(chatCompletionRequest);
-        System.out.println(completions.getChoices().get(0).getMessage());
         ChatCompletionSyncResponseDTO.Message message = completions.getChoices().get(0).getMessage();
         return message.getContent();
 
@@ -105,7 +105,7 @@ public class OpenAiCodeReviewService extends AbstractOpenAiCodeReviewService
         TemplateMessageDTO.put(data, TemplateMessageDTO.TemplateKey.BRANCH_NAME, gitCommand.getBranch());
         TemplateMessageDTO.put(data, TemplateMessageDTO.TemplateKey.COMMIT_AUTHOR, gitCommand.getAuthor());
         TemplateMessageDTO.put(data, TemplateMessageDTO.TemplateKey.COMMIT_MESSAGE, gitCommand.getMessage());
-        weiXin.sendTemplateMessage(logUrl,data);
+        iMessageStrategy.sendMessage(logUrl,data);
     }
 
 
