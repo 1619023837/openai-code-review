@@ -77,3 +77,4 @@ jobs:
           CHATGLM_APIKEYSECRET: ${{ secrets.CHATGLM_APIKEYSECRET }}
           NOTIFY: ${{ secrets.NOTIFY }}
           FEISHU_URL: ${{ secrets.FEISHU_URL }}
+          GIT_CHECK_COMMIT_URL: ${{ secrets.GIT_CHECK_COMMIT_URL }}
