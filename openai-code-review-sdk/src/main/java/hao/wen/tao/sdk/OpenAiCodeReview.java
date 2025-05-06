@@ -51,10 +51,9 @@ public class OpenAiCodeReview
     public static void main(String[] args)
         throws Exception
     {
-        System.out.println("start");
-        String url = EnvUtils.getEnv("GITHUB_REVIEW_LOG_URI") + "/" + EnvUtils.getEnv("GITHUB_VERSION");
+        String url = EnvUtils.getEnv("GIT_CHECK_COMMIT_URL") + "/" + EnvUtils.getEnv("GITHUB_VERSION");
         GitCommand gitCommand = new GitCommand(
-            url,
+            EnvUtils.getEnv("GITHUB_REVIEW_LOG_URI"),
             EnvUtils.getEnv("GITHUB_TOKEN"),
             EnvUtils.getEnv("COMMIT_PROJECT"),
             EnvUtils.getEnv("COMMIT_BRANCH"),
@@ -79,7 +78,7 @@ public class OpenAiCodeReview
         //chatglm 地址  生成token地址
         IOpenAI iOpenAI = new ChatGLM( EnvUtils.getEnv("CHATGLM_APIHOST"),  EnvUtils.getEnv("CHATGLM_APIKEYSECRET"));
         GitRestAPIOperation gitRestAPIOperation = new GitRestAPIOperation(
-            EnvUtils.getEnv("GIT_CHECK_COMMIT_URL"),  EnvUtils.getEnv("GITHUB_TOKEN"));
+            url,  EnvUtils.getEnv("GITHUB_TOKEN"));
         OpenAiCodeReviewService openAiCodeReviewService = new OpenAiCodeReviewService(gitRestAPIOperation,gitCommand, iOpenAI, messageStrategy);
         openAiCodeReviewService.exec();
         logger.info("openai-code-review done!");
