@@ -1,6 +1,9 @@
 package hao.wen.tao.sdk;
 
 import hao.wen.tao.sdk.domain.service.impl.OpenAiCodeReviewService;
+import hao.wen.tao.sdk.infrastructure.feishu.IMessageStrategy;
+import hao.wen.tao.sdk.infrastructure.feishu.MessageFactory;
+import hao.wen.tao.sdk.infrastructure.feishu.untils.EnvUtils;
 import hao.wen.tao.sdk.infrastructure.git.GitCommand;
 import hao.wen.tao.sdk.infrastructure.git.GitRestAPIOperation;
 import hao.wen.tao.sdk.infrastructure.openai.IOpenAI;
@@ -50,40 +53,36 @@ public class OpenAiCodeReview
     {
         System.out.println("start");
         GitCommand gitCommand = new GitCommand(
-            getEnv("GITHUB_REVIEW_LOG_URI"),
-            getEnv("GITHUB_TOKEN"),
-            getEnv("COMMIT_PROJECT"),
-            getEnv("COMMIT_BRANCH"),
-            getEnv("COMMIT_AUTHOR"),
-            getEnv("COMMIT_MESSAGE")
+            EnvUtils.getEnv("GITHUB_REVIEW_LOG_URI"),
+            EnvUtils.getEnv("GITHUB_TOKEN"),
+            EnvUtils.getEnv("COMMIT_PROJECT"),
+            EnvUtils.getEnv("COMMIT_BRANCH"),
+            EnvUtils.getEnv("COMMIT_AUTHOR"),
+            EnvUtils.getEnv("COMMIT_MESSAGE")
         );
 
-        /**
-         * 项目：{{repo_name.DATA}} 分支：{{branch_name.DATA}} 作者：{{commit_author.DATA}} 说明：{{commit_message.DATA}}
-         */
-        WeiXin weiXin = new WeiXin(
-            getEnv("WEIXIN_APPID"),
-            getEnv("WEIXIN_SECRET"),
-            getEnv("WEIXIN_TOUSER"),
-            getEnv("WEIXIN_TEMPLATE_ID")
-        );
+//        /**
+//         * 项目：{{repo_name.DATA}} 分支：{{branch_name.DATA}} 作者：{{commit_author.DATA}} 说明：{{commit_message.DATA}}
+//         */
+//        WeiXin weiXin = new WeiXin(
+//            EnvUtils.getEnv("WEIXIN_APPID"),
+//            EnvUtils.getEnv("WEIXIN_SECRET"),
+//            EnvUtils.getEnv("WEIXIN_TOUSER"),
+//            EnvUtils.getEnv("WEIXIN_TEMPLATE_ID")
+//        );
 
+        //获取信息类型
+        String notify= EnvUtils.getEnv("NOTIFY");
+
+        IMessageStrategy messageStrategy = MessageFactory.getMessageStrategy(notify);
         //chatglm 地址  生成token地址
-        IOpenAI iOpenAI = new ChatGLM(getEnv("CHATGLM_APIHOST"), getEnv("CHATGLM_APIKEYSECRET"));
+        IOpenAI iOpenAI = new ChatGLM( EnvUtils.getEnv("CHATGLM_APIHOST"),  EnvUtils.getEnv("CHATGLM_APIKEYSECRET"));
         GitRestAPIOperation gitRestAPIOperation = new GitRestAPIOperation(
-            getEnv("GIT_CHECK_COMMIT_URL"), getEnv("GITHUB_TOKEN"));
-        OpenAiCodeReviewService openAiCodeReviewService = new OpenAiCodeReviewService(gitRestAPIOperation,gitCommand, iOpenAI, weiXin);
+            EnvUtils.getEnv("GIT_CHECK_COMMIT_URL"),  EnvUtils.getEnv("GITHUB_TOKEN"));
+        OpenAiCodeReviewService openAiCodeReviewService = new OpenAiCodeReviewService(gitRestAPIOperation,gitCommand, iOpenAI, messageStrategy);
         openAiCodeReviewService.exec();
         logger.info("openai-code-review done!");
     }
 
-    private static String getEnv(String key)
-    {
-        String token = System.getenv(key);
-        if (token == null || token.length() == 0) {
-            throw new RuntimeException(key + "token is null");
-        }
-        return token;
-    }
 
 }
