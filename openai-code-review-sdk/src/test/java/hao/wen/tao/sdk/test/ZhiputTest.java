@@ -57,7 +57,7 @@ public class ZhiputTest
     public void test03()
         throws Exception
     {
-        codeReview("1111");
+        codeReview("111221");
     }
     private static  String  codeReview(String diffCode)
             throws Exception
