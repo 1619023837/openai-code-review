@@ -1,6 +1,7 @@
 package hao.wen.tao.sdk.infrastructure.git;
 
 
+import hao.wen.tao.sdk.domain.BaseGitOperation;
 import hao.wen.tao.sdk.types.utils.RandomStringUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
@@ -13,7 +14,7 @@ import java.util.Date;
 
 
 
-public class GitCommand
+public class GitCommand implements BaseGitOperation
 {
 
     //提交日志仓库的uri地址
@@ -96,6 +97,13 @@ public class GitCommand
         }
 
         return diffCode.toString();
+    }
+
+    @Override
+    public String writeResult(String result)
+        throws Exception
+    {
+        return commitAndPush(result);
     }
 
     /**

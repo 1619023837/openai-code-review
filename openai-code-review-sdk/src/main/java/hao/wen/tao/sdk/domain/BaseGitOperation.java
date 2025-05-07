@@ -11,4 +11,7 @@ public interface BaseGitOperation
      */
     String diff()
         throws Exception;
+
+    String writeResult(String result)
+        throws Exception;
 }

@@ -12,6 +12,8 @@ public class SingleCommitResponse
 
     private Commit commit;
 
+    private String html_url;
+
     private CommitFile[] files;
     @Data
     public static class Commit

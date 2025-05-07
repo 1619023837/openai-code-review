@@ -1,5 +1,8 @@
 package hao.wen.tao.sdk.infrastructure.llmmodel.common.input;
 
+/**
+ * 提示词对象
+ */
 public class Prompt
 {
 
