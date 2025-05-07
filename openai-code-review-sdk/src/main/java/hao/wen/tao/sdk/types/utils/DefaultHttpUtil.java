@@ -16,6 +16,7 @@ public class DefaultHttpUtil
     public static String execute(String uri, Map<String,String> headers)
         throws Exception
     {
+
         URL url = new URL(uri);
         HttpURLConnection connection = (HttpURLConnection)url.openConnection();
         connection.setRequestMethod("GET");

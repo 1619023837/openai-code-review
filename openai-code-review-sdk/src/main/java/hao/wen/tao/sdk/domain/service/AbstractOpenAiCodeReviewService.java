@@ -1,5 +1,6 @@
 package hao.wen.tao.sdk.domain.service;
 
+import hao.wen.tao.sdk.domain.BaseGitOperation;
 import hao.wen.tao.sdk.infrastructure.feishu.IMessageStrategy;
 import hao.wen.tao.sdk.infrastructure.git.GitCommand;
 import hao.wen.tao.sdk.infrastructure.openai.IOpenAI;
@@ -15,11 +16,11 @@ public abstract class AbstractOpenAiCodeReviewService implements IOpenAiCodeRevi
     private final Logger logger = LoggerFactory.getLogger(AbstractOpenAiCodeReviewService.class);
 
 
-    protected final GitCommand gitCommand;
+    protected final BaseGitOperation gitCommand;
     protected final IOpenAI openAI;
     protected final IMessageStrategy iMessageStrategy;
 
-    public AbstractOpenAiCodeReviewService(GitCommand gitCommand, IOpenAI openAI, IMessageStrategy iMessageStrategy)
+    public AbstractOpenAiCodeReviewService(BaseGitOperation gitCommand, IOpenAI openAI, IMessageStrategy iMessageStrategy)
     {
         this.gitCommand = gitCommand;
         this.openAI = openAI;

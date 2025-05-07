@@ -9,6 +9,6 @@ import hao.wen.tao.sdk.infrastructure.openai.dto.ChatCompletionSyncResponseDTO;
 public interface IOpenAI
 {
 
-    ChatCompletionSyncResponseDTO complateion(ChatCompletionRequestDTO chatCompletionRequestDTO)
+    ChatCompletionSyncResponseDTO complateion(Object chatCompletionRequestDTO)
         throws Exception;
 }

@@ -26,7 +26,7 @@ public class ChatGLM implements IOpenAI
     }
 
     @Override
-    public ChatCompletionSyncResponseDTO complateion(ChatCompletionRequestDTO chatCompletionRequestDTO) throws Exception
+    public ChatCompletionSyncResponseDTO complateion(Object chatCompletionRequestDTO) throws Exception
     {
         String token = BearerTokenUtils.getToken(apiSecret);
         URL url = new URL(apiHost);
