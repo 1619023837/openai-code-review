@@ -8,6 +8,7 @@ import hao.wen.tao.sdk.infrastructure.git.GitCommand;
 import hao.wen.tao.sdk.infrastructure.git.GitRestAPIOperation;
 import hao.wen.tao.sdk.infrastructure.openai.IOpenAI;
 import hao.wen.tao.sdk.infrastructure.openai.impl.ChatGLM;
+import hao.wen.tao.sdk.infrastructure.openai.impl.ZhiHui;
 import hao.wen.tao.sdk.infrastructure.weixin.WeiXin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,17 +50,17 @@ public class OpenAiCodeReview
      * @throws Exception
      */
     public static void main(String[] args)
-        throws Exception
+            throws Exception
     {
         String url = EnvUtils.getEnv("GIT_CHECK_COMMIT_URL") + "/" + EnvUtils.getEnv("GITHUB_VERSION");
-        GitCommand gitCommand = new GitCommand(
-            EnvUtils.getEnv("GITHUB_REVIEW_LOG_URI"),
-            EnvUtils.getEnv("GITHUB_TOKEN"),
-            EnvUtils.getEnv("COMMIT_PROJECT"),
-            EnvUtils.getEnv("COMMIT_BRANCH"),
-            EnvUtils.getEnv("COMMIT_AUTHOR"),
-            EnvUtils.getEnv("COMMIT_MESSAGE")
-        );
+//        GitCommand gitCommand = new GitCommand(
+//            EnvUtils.getEnv("GITHUB_REVIEW_LOG_URI"),
+//            EnvUtils.getEnv("GITHUB_TOKEN"),
+//            EnvUtils.getEnv("COMMIT_PROJECT"),
+//            EnvUtils.getEnv("COMMIT_BRANCH"),
+//            EnvUtils.getEnv("COMMIT_AUTHOR"),
+//            EnvUtils.getEnv("COMMIT_MESSAGE")
+//        );
 
 //        /**
 //         * 项目：{{repo_name.DATA}} 分支：{{branch_name.DATA}} 作者：{{commit_author.DATA}} 说明：{{commit_message.DATA}}
@@ -76,10 +77,12 @@ public class OpenAiCodeReview
 
         IMessageStrategy messageStrategy = MessageFactory.getMessageStrategy(notify);
         //chatglm 地址  生成token地址
-        IOpenAI iOpenAI = new ChatGLM( EnvUtils.getEnv("CHATGLM_APIHOST"),  EnvUtils.getEnv("CHATGLM_APIKEYSECRET"));
+//        IOpenAI iOpenAI = new ChatGLM( EnvUtils.getEnv("CHATGLM_APIHOST"),  EnvUtils.getEnv("CHATGLM_APIKEYSECRET"));
+
+        IOpenAI iOpenAI = new ZhiHui( EnvUtils.getEnv("CHATGLM_APIHOST"),  EnvUtils.getEnv("CHATGLM_APIKEYSECRET"));
         GitRestAPIOperation gitRestAPIOperation = new GitRestAPIOperation(
-            url,  EnvUtils.getEnv("GITHUB_TOKEN"));
-        OpenAiCodeReviewService openAiCodeReviewService = new OpenAiCodeReviewService(gitRestAPIOperation,gitCommand, iOpenAI, messageStrategy);
+                url,  EnvUtils.getEnv("GITHUB_TOKEN"));
+        OpenAiCodeReviewService openAiCodeReviewService = new OpenAiCodeReviewService(gitRestAPIOperation, iOpenAI, messageStrategy);
         openAiCodeReviewService.exec();
         logger.info("openai-code-review done!");
     }

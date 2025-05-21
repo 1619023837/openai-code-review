@@ -57,4 +57,14 @@ public class ChatGLM implements IOpenAI
             return JSON.parseObject(stringBuilder.toString(), ChatCompletionSyncResponseDTO.class);
         }
     }
+
+    @Override
+    public String getUrl() {
+        return apiHost;
+    }
+
+    @Override
+    public String apiSecret() {
+        return apiSecret;
+    }
 }

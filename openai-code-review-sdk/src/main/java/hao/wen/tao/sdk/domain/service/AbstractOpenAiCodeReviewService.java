@@ -16,13 +16,13 @@ public abstract class AbstractOpenAiCodeReviewService implements IOpenAiCodeRevi
     private final Logger logger = LoggerFactory.getLogger(AbstractOpenAiCodeReviewService.class);
 
 
-    protected final BaseGitOperation gitCommand;
+    protected final BaseGitOperation baseGitOperation;
     protected final IOpenAI openAI;
     protected final IMessageStrategy iMessageStrategy;
 
-    public AbstractOpenAiCodeReviewService(BaseGitOperation gitCommand, IOpenAI openAI, IMessageStrategy iMessageStrategy)
+    public AbstractOpenAiCodeReviewService(BaseGitOperation baseGitOperation, IOpenAI openAI, IMessageStrategy iMessageStrategy)
     {
-        this.gitCommand = gitCommand;
+        this.baseGitOperation = baseGitOperation;
         this.openAI = openAI;
         this.iMessageStrategy = iMessageStrategy;
     }

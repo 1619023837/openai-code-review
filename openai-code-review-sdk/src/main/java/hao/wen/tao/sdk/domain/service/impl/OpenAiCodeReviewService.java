@@ -3,8 +3,6 @@ package hao.wen.tao.sdk.domain.service.impl;
 import hao.wen.tao.sdk.domain.BaseGitOperation;
 import hao.wen.tao.sdk.domain.service.AbstractOpenAiCodeReviewService;
 import hao.wen.tao.sdk.infrastructure.feishu.IMessageStrategy;
-import hao.wen.tao.sdk.infrastructure.git.GitCommand;
-import hao.wen.tao.sdk.infrastructure.git.GitRestAPIOperation;
 import hao.wen.tao.sdk.infrastructure.git.write.IWriteHandlerStrategy;
 import hao.wen.tao.sdk.infrastructure.git.write.WriteHandlerStrategeFactory;
 import hao.wen.tao.sdk.infrastructure.llmmodel.common.input.Prompt;
@@ -16,10 +14,6 @@ import hao.wen.tao.sdk.infrastructure.llmmodel.common.text.SystemMessageText;
 import hao.wen.tao.sdk.infrastructure.llmmodel.common.text.UserMessageText;
 import hao.wen.tao.sdk.infrastructure.llmmodel.common.zhipu.ZhipuAiChatModel;
 import hao.wen.tao.sdk.infrastructure.openai.IOpenAI;
-import hao.wen.tao.sdk.infrastructure.openai.dto.ChatCompletionRequestDTO;
-import hao.wen.tao.sdk.infrastructure.openai.dto.ChatCompletionSyncResponseDTO;
-import hao.wen.tao.sdk.infrastructure.weixin.dto.TemplateMessageDTO;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,13 +23,9 @@ import java.util.Map;
 public class OpenAiCodeReviewService extends AbstractOpenAiCodeReviewService
 {
 
-    private GitRestAPIOperation gitRestAPIOperation;
-
-    public OpenAiCodeReviewService(GitRestAPIOperation gitRestAPIOperation,
-                                   BaseGitOperation gitCommand, IOpenAI openAI, IMessageStrategy iMessageStrategy)
+    public OpenAiCodeReviewService(BaseGitOperation baseGitOperation, IOpenAI openAI, IMessageStrategy iMessageStrategy)
     {
-        super(gitCommand, openAI, iMessageStrategy);
-        this.gitRestAPIOperation = gitRestAPIOperation;
+        super(baseGitOperation, openAI, iMessageStrategy);
     }
 
 
@@ -43,7 +33,7 @@ public class OpenAiCodeReviewService extends AbstractOpenAiCodeReviewService
     protected String getDiffCode()
         throws Exception
     {
-        return  this.gitRestAPIOperation.diff();
+        return  super.baseGitOperation.diff();
     }
 
     @Override
@@ -113,9 +103,9 @@ public class OpenAiCodeReviewService extends AbstractOpenAiCodeReviewService
         UserMessageText userMessageText = new UserMessageText(userApply.getText());
 
         ZhipuAiChatModel chatModel = ZhipuAiChatModel.builder()
-                .model("glm-4-flash")
-                .apiSecret("3763aa13ab2847528d6ffdc2fa6c53c7.6pb98r42BWeB5KWJ")
-                .baseUrl("https://open.bigmodel.cn/api/paas/v4/chat/completions").build();
+                .model("")
+                .apiSecret(openAI.apiSecret())
+                .baseUrl(openAI.getUrl()).build();
         List<ChatMessageText> chatMessageTexts = new ArrayList(){
             {
                 add(systemMessageText);
@@ -134,7 +124,7 @@ public class OpenAiCodeReviewService extends AbstractOpenAiCodeReviewService
         IWriteHandlerStrategy writeHandlerStrategy = WriteHandlerStrategeFactory.getWriteHandlerStrategy(
             writeHandler);
 
-        writeHandlerStrategy.init(gitCommand);
+        writeHandlerStrategy.init(baseGitOperation);
         return writeHandlerStrategy.execute(recommend);
     }
 
