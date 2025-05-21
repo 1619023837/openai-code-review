@@ -11,4 +11,8 @@ public interface IOpenAI
 
     ChatCompletionSyncResponseDTO complateion(Object chatCompletionRequestDTO)
         throws Exception;
+
+    String getUrl();
+
+    String apiSecret();
 }
