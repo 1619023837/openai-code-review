@@ -2,6 +2,7 @@ package hao.wen.tao.sdk.types.utils;
 
 import com.alibaba.fastjson2.JSON;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -63,8 +64,17 @@ public class DefaultHttpUtil
         }
         in.close();
         connection.connect();
+
         return response.toString();
     }
 
 
+    //加一个获取某个HTTP地址的字节输入流的方法，如
+    public static InputStream getHttpInputStream(String uri) throws Exception {
+        URL url = new URL(uri);
+        HttpURLConnection httpURLConnection =(HttpURLConnection) url.openConnection();
+        httpURLConnection.setRequestMethod("GET");
+        httpURLConnection.setDoOutput(true);
+        return httpURLConnection.getInputStream();
+    }
 }
