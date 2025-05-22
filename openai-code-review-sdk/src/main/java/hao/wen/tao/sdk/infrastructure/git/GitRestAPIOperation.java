@@ -2,6 +2,8 @@ package hao.wen.tao.sdk.infrastructure.git;
 
 import com.alibaba.fastjson2.JSON;
 import hao.wen.tao.sdk.domain.BaseGitOperation;
+import hao.wen.tao.sdk.infrastructure.context.model.CodeReviewFile;
+import hao.wen.tao.sdk.infrastructure.feishu.untils.EnvUtils;
 import hao.wen.tao.sdk.infrastructure.git.dto.CommitCommentRequestDTO;
 import hao.wen.tao.sdk.infrastructure.git.dto.SingleCommitResponse;
 import hao.wen.tao.sdk.types.utils.DefaultHttpUtil;
@@ -9,7 +11,10 @@ import hao.wen.tao.sdk.types.utils.DiffParseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -48,6 +53,25 @@ public class GitRestAPIOperation implements BaseGitOperation
         return sb.toString();
     }
 
+    @Override
+    public List<CodeReviewFile> diffFileList() throws Exception {
+        SingleCommitResponse singleCommitResponse = getCommitResponse();
+        SingleCommitResponse.CommitFile[] files = singleCommitResponse.getFiles();
+        List<CodeReviewFile> list = new ArrayList<>();
+        for (SingleCommitResponse.CommitFile file : files) {
+            CodeReviewFile codeReviewFile = new CodeReviewFile();
+            codeReviewFile.setFileName(file.getFilename());
+            codeReviewFile.setDiff(file.getPatch());
+            //发起请求 获取内容
+            //远程读取文件内容
+            String execute = DefaultHttpUtil.execute(file.getRaw_url(), new HashMap<>());
+            codeReviewFile.setFileContent(execute);
+            list.add(codeReviewFile);
+        }
+        return list;
+    }
+
+    //Github Commit API 通过api 获取到 提交的代码内容
     private SingleCommitResponse getCommitResponse()
         throws Exception
     {

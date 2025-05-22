@@ -2,6 +2,7 @@ package hao.wen.tao.sdk.infrastructure.git;
 
 
 import hao.wen.tao.sdk.domain.BaseGitOperation;
+import hao.wen.tao.sdk.infrastructure.context.model.CodeReviewFile;
 import hao.wen.tao.sdk.types.utils.RandomStringUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
@@ -10,8 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
-
+import java.util.List;
 
 
 public class GitCommand implements BaseGitOperation
@@ -97,6 +99,11 @@ public class GitCommand implements BaseGitOperation
         }
 
         return diffCode.toString();
+    }
+
+    @Override
+    public List<CodeReviewFile> diffFileList() throws Exception {
+        return Collections.emptyList();
     }
 
     @Override
