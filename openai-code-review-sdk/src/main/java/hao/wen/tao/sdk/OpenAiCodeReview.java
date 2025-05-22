@@ -84,6 +84,7 @@ public class OpenAiCodeReview
                 url,  EnvUtils.getEnv("GITHUB_TOKEN"));
         OpenAiCodeReviewService openAiCodeReviewService = new OpenAiCodeReviewService(gitRestAPIOperation, iOpenAI, messageStrategy);
         openAiCodeReviewService.exec();
+
         logger.info("openai-code-review done!");
     }
 
