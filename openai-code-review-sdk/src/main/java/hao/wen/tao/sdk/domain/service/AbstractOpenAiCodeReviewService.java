@@ -1,14 +1,17 @@
 package hao.wen.tao.sdk.domain.service;
 
 import hao.wen.tao.sdk.domain.BaseGitOperation;
+import hao.wen.tao.sdk.infrastructure.context.model.CodeReviewFile;
 import hao.wen.tao.sdk.infrastructure.context.model.ExecuteCodeReviewRequestContext;
 import hao.wen.tao.sdk.infrastructure.feishu.IMessageStrategy;
 import hao.wen.tao.sdk.infrastructure.git.GitCommand;
 import hao.wen.tao.sdk.infrastructure.openai.IOpenAI;
+import hao.wen.tao.sdk.infrastructure.quatify.listener.impl.CodeReviewResultListenerFactory;
+import hao.wen.tao.sdk.infrastructure.quatify.model.CodeReviewResultContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+import java.io.File;
 
 
 public abstract class AbstractOpenAiCodeReviewService implements IOpenAiCodeReviewService
@@ -44,12 +47,28 @@ public abstract class AbstractOpenAiCodeReviewService implements IOpenAiCodeRevi
             String logUrl = recordCodeReview(recommend);
             // 4. 发送消息通知；日志地址、通知的内容
             pushMessage(logUrl);
+            //5、触发评审结果的监听器对象
+            triggerOnComplete(recommend, executeCodeReviewRequestContext);
 
         } catch (Exception e) {
             logger.error("openai-code-review error", e);
         }
 
 
+    }
+
+    private void triggerOnComplete(String recommend, ExecuteCodeReviewRequestContext executeCodeReviewRequestContext) {
+        CodeReviewResultContext codeReviewResultContext = new CodeReviewResultContext();
+        codeReviewResultContext.setResult(recommend);
+        codeReviewResultContext.setAuthor("wuchuzai");
+        codeReviewResultContext.setBizName("需求");
+        StringBuilder sb = new StringBuilder();
+        for (CodeReviewFile codeReviewFile : executeCodeReviewRequestContext.getCodeReviewFiles()) {
+            sb.append(codeReviewFile.getFileName()).append("-------------------");
+        }
+        codeReviewResultContext.setFileList(sb.toString());
+        codeReviewResultContext.setBrachName("feature/2010");
+        CodeReviewResultListenerFactory.triggerListenerOnComplete(codeReviewResultContext);
     }
 
     protected abstract void pushMessage(String logUrl)

@@ -31,4 +31,8 @@ public class CodeReivewConfigPropertiesFacade {
     public Properties asProperties() {
         return codeReviewProprtySource.asProperties();
     }
+
+    public CodeReviewProprtySource getCodeReviewProprtySource() {
+        return this.codeReviewProprtySource;
+    }
 }

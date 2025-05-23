@@ -1,10 +1,13 @@
 package hao.wen.tao.sdk.infrastructure.quatify.model;
 
+import lombok.Data;
+
 import java.util.List;
 
 /**
  * 代码评审结果上下文
  */
+@Data
 public class CodeReviewResultContext {
 
     /**
@@ -25,7 +28,7 @@ public class CodeReviewResultContext {
     /**
      * 评审文件 路径
      */
-    private List<String> fileList;
+    private String fileList;
 
     /**
      * 需求/任务名称
